@@ -22,7 +22,7 @@ def chunk_and_convert_to_json(chunk):
     return json_chunk
 
 if __name__ == "__main__":
-    icon("GlobalSKU Search Query Generator")
+    icon("GlobalSKU")
 
     st.subheader("Welcome to the GlobalSKU Search Query Generator",
                  divider="rainbow", anchor=False)
