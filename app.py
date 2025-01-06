@@ -31,8 +31,8 @@ if __name__ == "__main__":
     with st.sidebar:
         st.header("👇Upload an Excel file")
         with st.form("my_form"):
-            file_upload = st.file_uploader("Upload excel")
-            submitted = st.form_submit_button("Run Agents")
+            file_upload = st.file_uploader("Upload File", type=["xlsx"])
+            submitted = st.form_submit_button("Run")
 
         st.divider()
 
