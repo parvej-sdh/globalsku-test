@@ -50,11 +50,13 @@ if __name__ == "__main__":
             res = res.json()
             print(res)
             if res["status"] == 200:
-                results = [item for item in res["result"]["itmes"]["searchQuery"]]
+                
+                # results = [item["searchQuery"] for item in res["results"]["items"]]
 
-                response_df = pd.DataFrame(chunk)
-                response_df["Search Query"] = results
+                response_df = pd.DataFrame(res["results"]["items"])
+                # response_df["Search Query"] = results
                 print(response_df)
+                # print(results)
                 st.subheader(f"Result for {i+1} chunk: ", anchor=False, divider="rainbow")
                 st.write(response_df)
             else:
