@@ -58,6 +58,6 @@ if __name__ == "__main__":
                 print(response_df)
                 # print(results)
                 st.subheader(f"Result for chunk- {i+1} ", anchor=False, divider="rainbow")
-                st.write(response_df)
+                st.table(response_df)
             else:
                 st.write(res["message"])
