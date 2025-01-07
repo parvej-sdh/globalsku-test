@@ -31,13 +31,18 @@ if __name__ == "__main__":
     with st.sidebar:
         st.header("👇Upload an Excel file")
         with st.form("my_form"):
-            file_upload = st.file_uploader("Upload File", type=["xlsx"])
+            file_upload = st.file_uploader("Upload File", type=["xlsx", "csv"])
             submitted = st.form_submit_button("Run")
 
         st.divider()
 
     if submitted:
-        data = pd.read_excel(file_upload)
+        if file_upload is not None:
+            if file_upload.name.endswith('.xlsx'):
+                data = pd.read_excel(file_upload)
+            elif file_upload.name.endswith('.csv'):
+                data = pd.read_csv(file_upload)
+        
         data = data.astype(str).to_dict(orient="records")
         chunk_size = 3
 
