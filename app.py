@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     if submitted:
         data = pd.read_excel(file_upload)
-        data = data.to_dict(orient="records")
+        data = data.astype(str).to_dict(orient="records")
         chunk_size = 3
 
         chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
@@ -57,7 +57,7 @@ if __name__ == "__main__":
                 # response_df["Search Query"] = results
                 print(response_df)
                 # print(results)
-                st.subheader(f"Result for {i+1} chunk: ", anchor=False, divider="rainbow")
+                st.subheader(f"Result for chunk- {i+1} ", anchor=False, divider="rainbow")
                 st.write(response_df)
             else:
                 st.write(res["message"])
