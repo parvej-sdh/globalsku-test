@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     
     with st.sidebar:
-        st.header("👇Upload an Excel file")
+        st.header("Upload a file")
         with st.form("my_form"):
             file_upload = st.file_uploader("Upload File", type=["xlsx", "csv"])
             submitted = st.form_submit_button("Run")
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                 data = pd.read_csv(file_upload)
         
         data = data.astype(str).to_dict(orient="records")
-        chunk_size = 3
+        chunk_size = 2
 
         chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
         
