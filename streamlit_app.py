@@ -61,7 +61,7 @@ def extract_audio(video_path: Path) -> Path:
         raise RuntimeError(f"Error extracting audio: {e}")
 
 def main():
-    st.title("GlobalSKU: Video to Product Listing Generator")
+    st.title("GlobalSKU: Video Listing")
     
     # File uploader
     uploaded_file = st.file_uploader("Choose a video file", type=['mp4', 'avi', 'mov'])
