@@ -25,13 +25,16 @@ def detect_objects_in_frame(image_path, query):
         "frame": encoded_string,
         "query": query,
     })
+    # print(res.json())
     return res.json()
 
 def generate_listing(trans, det):
     res = requests.post(listing_api, json={"detections": det, 
                                            "transcription": trans})
+    # print(res.json())
     return res.json()
 
 def get_products(trans):
     res = requests.post(product_api, json={"transcription": trans})
+    # print(res.json())
     return res.json()

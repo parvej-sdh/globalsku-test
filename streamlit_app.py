@@ -61,7 +61,7 @@ def extract_audio(video_path: Path) -> Path:
         raise RuntimeError(f"Error extracting audio: {e}")
 
 def main():
-    st.title("GlobalSKU: Video Listing")
+    st.title("GlobalSKU: Listing by Video")
     
     # File uploader
     uploaded_file = st.file_uploader("Choose a video file", type=['mp4', 'avi', 'mov'])
@@ -76,8 +76,9 @@ def main():
         # Create output directory
         output_dir = "extracted_frames"
         Path(output_dir).mkdir(exist_ok=True)
+        st.success(f'Successfully uploaded video!')
         
-        if st.button("Get Listing"):
+        if st.button("Create Listing"):
             with st.spinner('Converting video to frames...'):
                 st.write(f"Processing video: {uploaded_file.name}")
                 # st.write(f"Temporary file path: {tfile.name}")
@@ -103,57 +104,75 @@ def main():
             with st.spinner('Extracting audio...'):
                 
                 audio_path = extract_audio(Path(tfile.name))
-                st.subheader("Preview of Extracted audio")
+                trans = upload_audio_transcription(audio_path)
+                st.subheader("Preview of Extracted Audio")
                 st.audio(audio_path)
 
             with st.spinner('Detecting products...'):
                 try:
-                    trans = upload_audio_transcription(audio_path)
-
                     query = get_products(trans["transcription"])["product_names"]
                     query = ", ".join(query)
+                    print(query)
                     # query = "katana, sword"
                     # frames = [str(Path(output_dir) / frame_file) for frame_file in os.listdir(output_dir)[:1]]
                     dets = [detect_objects_in_frame(frame_file, query) for frame_file in frames]
+                    print(dets)
                     st.success(f'Successfully detected products!')
                     st.subheader("Preview of Detected Products")
                     cols = st.columns(len(frames))
                     detections = [det["detections"] for det in dets]
+                    print(detections)
                     for idx, (frame, det) in enumerate(zip(frames, detections)):
                         # frame_path = os.path.join(output_dir, frame_file)
                         cols[idx].image(frame, caption=f'Product: {det[0]["class_name"].title()} | Confidence: {det[0]["confidence"]*100:.2f}%')
 
                     dets = str(dets)
+                    with st.spinner('Generating Listing...'):
+                        listing = generate_listing(trans["transcription"], dets)
+
+                        # Extract product details
+                        product = listing["product_listing"]
+                        st.success(f'Successfully generated listing!')
+                        # Streamlit UI
+                        st.title("Product Listing")
+
+                        # Loop through product details and display them
+
+                        for key, value in product.items():
+                            if isinstance(value, list):
+                                value = ", ".join(value)
+                            st.markdown(f"**{key.capitalize()}:** {value}")
+
+                    # Clean up temporary file
+                    os.unlink(tfile.name)
+                    shutil.rmtree("extracted_frames")
+                    shutil.rmtree("extracted_audio")
+
 
                 except Exception as e:
                     st.error(f"Could not detect products: {e}")
-                    return
+                    dets = "Could not detect products"
+                    with st.spinner('Generating Listing...'):
+                        listing = generate_listing(trans["transcription"], dets)
 
+                        # Extract product details
+                        product = listing["product_listing"]
+                        st.success(f'Successfully generated listing!')
+                        # Streamlit UI
+                        st.title("Product Listing")
 
-            # st.write(dets)
+                        # Loop through product details and display them
 
-            with st.spinner('Generating Listing...'):
-                listing = generate_listing(trans["transcription"], dets)
-
-                # Extract product details
-                product = listing["product_listing"]
-                st.success(f'Successfully generated listing!')
-                # Streamlit UI
-                st.title("Product Listing")
-
-                # Loop through product details and display them
-
-                for key, value in product.items():
-                    if isinstance(value, list):
-                        value = ", ".join(value)
-                    st.markdown(f"**{key.capitalize()}:** {value}")
-
+                        for key, value in product.items():
+                            if isinstance(value, list):
+                                value = ", ".join(value)
+                            st.markdown(f"**{key.capitalize()}:** {value}")
+                    # st.write(dets)
                 
-        
-        # Clean up temporary file
-        os.unlink(tfile.name)
-        shutil.rmtree("extracted_frames")
-        shutil.rmtree("extracted_audio")
+                    # Clean up temporary file
+                    os.unlink(tfile.name)
+                    shutil.rmtree("extracted_frames")
+                    shutil.rmtree("extracted_audio")
 
 if __name__ == "__main__":
     main()
